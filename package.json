@@ -1,0 +1,81 @@
+{
+  "name": "ant-sniffer",
+  "description": "A sniffer based on libpcap and electron",
+  "version": "0.0.1",
+  "private": true,
+  "homepage": ".",
+  "scripts": {
+    "dev": "concurrently 'yarn dev:web' 'yarn dev:electron'",
+    "dev:web": "cross-env BROWSER=none react-app-rewired start",
+    "dev:electron": "wait-on http://localhost:3000 && concurrently 'tsc -w app/app.ts --outDir build/electron' 'wait-on build/electron/app.js && nodemon --watch build/electron/**/*.js --exec electron build/electron/app.js'",
+    "build": "yarn build:web && tsc app/app.ts --outDir build/electron && yarn build:electron",
+    "build:web": "react-app-rewired build && node scripts/post-build-web.js",
+    "build:electron": "electron-builder build --mac",
+    "postinstall": "electron-builder install-app-deps",
+    "clean": "rimraf build release"
+  },
+  "dependencies": {
+    "antd": "^4.0.2",
+    "electron-is-dev": "^1.1.0",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "antd-dayjs-webpack-plugin": "^0.0.8",
+    "babel-plugin-import": "^1.13.0",
+    "concurrently": "^5.1.0",
+    "cross-env": "^7.0.2",
+    "customize-cra": "1.0.0-alpha.0",
+    "devtron": "^1.4.0",
+    "electron": "^8.1.1",
+    "electron-builder": "^22.4.1",
+    "electron-debug": "^3.0.1",
+    "electron-devtools-installer": "^2.2.4",
+    "less": "^3.11.1",
+    "less-loader": "^5.0.0",
+    "nodemon": "^2.0.2",
+    "react-app-rewired": "^2.1.5",
+    "react-scripts": "3.4.0",
+    "rimraf": "^3.0.2",
+    "typescript": "~3.7.2",
+    "wait-on": "^4.0.1"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "build": {
+    "productName": "Ant Sniffer",
+    "appId": "io.gitub.pyyzcwg2833.ant-sniffer",
+    "extends": null,
+    "files": [
+      "build/**/*"
+    ],
+    "extraMetadata": {
+      "main": "build/electron/app.js"
+    },
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "mac": {
+      "target": [
+        "dir"
+      ]
+    }
+  }
+}
