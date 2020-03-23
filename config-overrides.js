@@ -8,10 +8,13 @@ const {
 const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
 
 module.exports = override(
-  fixBabelImports('import', {
-    libraryName: 'antd',
+  fixBabelImports('antd', {
     libraryDirectory: 'es',
     style: true
+  }),
+  fixBabelImports('lodash', {
+    libraryDirectory: '',
+    camel2DashComponentName: false
   }),
   addLessLoader({
     javascriptEnabled: true

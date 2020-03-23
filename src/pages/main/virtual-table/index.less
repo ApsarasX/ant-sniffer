@@ -1,0 +1,48 @@
+.virtual-table {
+  text-align: left;
+  user-select: none;
+}
+
+.virtual-table-header {
+  table-layout: fixed;
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  tr {
+    display: flex;
+  }
+  th {
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+    overflow-wrap: break-word;
+    height: 28px;
+    &.virtual-table-cell-scrollbar {
+      width: 12px;
+      padding: 0;
+      margin: 0;
+      border: none;
+    }
+  }
+}
+
+.virtual-table-row {
+  display: flex;
+  box-sizing: border-box;
+  border-bottom: 1px solid #e8e8e8;
+  line-height: 28px;
+  color: #434343;
+  font-weight: 500;
+  &:hover {
+    background-color: #40a9ff;
+    color: #fafafa;
+    cursor: pointer;
+  }
+}
+.virtual-table-hdrcell,
+.virtual-table-cell {
+  flex: 1;
+  padding-left: 24px;
+}

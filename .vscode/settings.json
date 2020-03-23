@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.gyp": "json",
+    "iosfwd": "cpp"
+  }
+}

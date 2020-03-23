@@ -1,7 +1,9 @@
 import * as path from 'path';
 import * as url from 'url';
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as isDev from 'electron-is-dev';
+import { ISniffer, ISnifferInstance } from './sniffer';
+const sniffer: ISniffer = require('./sniffer.node');
 
 if (isDev) {
   require('electron-debug')({
@@ -25,7 +27,7 @@ const appUrl = isDev ? devUrl : prodUrl;
 let win: BrowserWindow | null = null;
 
 function createWindow() {
-  // 创建浏览器窗口。
+  // 创建浏览器窗口
   win = new BrowserWindow({
     fullscreen: true,
     webPreferences: {
@@ -73,3 +75,36 @@ app.on('activate', function() {
     createWindow();
   }
 });
+
+ipcMain.on('getAllDevices', event => {
+  const devs = sniffer.getDevs();
+  event.returnValue = devs.map(item => item.name);
+});
+
+let snifferInstance: ISnifferInstance;
+let isRunning = false;
+
+ipcMain.on('openDevice', (event, arg) => {
+  const devName: string = arg;
+  if (!snifferInstance) {
+    snifferInstance = sniffer.openDev(devName);
+  }
+});
+
+ipcMain.on('startCapture', event => {
+  if (snifferInstance && !isRunning) {
+    snifferInstance.onProgress(onProgress);
+    snifferInstance.start();
+    isRunning = true;
+    setInterval(() => {
+      snifferInstance?.keepAlive();
+    }, 1000);
+  }
+});
+
+function onProgress(packet: any) {
+  if (win) {
+    snifferInstance?.keepAlive();
+    win.webContents.send('progress', packet);
+  }
+}

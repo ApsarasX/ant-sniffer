@@ -1,15 +1,24 @@
 import React from 'react';
+import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import WelcomePage from './pages/welcome';
+import MainPage from './pages/main';
 
-interface IProps {}
-interface IState {}
-
-export default class App extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-    this.state = {};
-  }
-
+export default class App extends React.Component {
   render() {
-    return <div></div>;
+    return (
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/welcome">
+            <WelcomePage />
+          </Route>
+          <Route exact path="/main">
+            <MainPage />
+          </Route>
+          <Route path="*">
+            <Redirect to="/main" />
+          </Route>
+        </Switch>
+      </BrowserRouter>
+    );
   }
 }
