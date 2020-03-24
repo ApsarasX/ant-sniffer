@@ -9,8 +9,10 @@
     "dev:gyp": "node-gyp rebuild && mv build/Release/sniffer.node app/ && rimraf build && mkdir -p build/electron && mv app/sniffer.node build/electron",
     "dev:web": "cross-env BROWSER=none react-app-rewired start",
     "dev:electron": "wait-on http://localhost:3000 && concurrently 'tsc -w app/app.ts --outDir build/electron' 'wait-on build/electron/app.js && nodemon --watch build/electron/app.js --exec electron build/electron/app.js'",
-    "build": "yarn build:web && tsc app/app.ts --outDir build/electron && yarn build:electron",
+    "build": "yarn build:gyp && yarn build:web && yarn build:mvcp && yarn build:electron",
+    "build:gyp": "node-gyp rebuild && mv build/Release/sniffer.node app/",
     "build:web": "react-app-rewired build && node scripts/post-build-web.js",
+    "build:mvcp": "tsc app/app.ts --outDir build/electron && mv app/sniffer.node build/electron && cp -r app/assets build/electron",
     "build:electron": "electron-builder build --mac",
     "postinstall": "electron-builder install-app-deps",
     "clean": "rimraf build release"
@@ -84,7 +86,8 @@
     "mac": {
       "target": [
         "dir"
-      ]
+      ],
+      "icon": "build/electron/assets/logo.png"
     }
   }
 }

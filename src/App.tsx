@@ -15,7 +15,7 @@ export default class App extends React.Component {
             <MainPage />
           </Route>
           <Route path="*">
-            <Redirect to="/main" />
+            <Redirect to="/welcome" />
           </Route>
         </Switch>
       </BrowserRouter>

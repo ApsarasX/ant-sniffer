@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Input, Modal, Switch } from 'antd';
+import { withRouter } from 'react-router';
+import { Button, Input, Modal, Switch, message } from 'antd';
 import { throttle } from 'lodash';
 import { ipcRenderer } from 'electron';
 import dayjs from 'dayjs';
@@ -9,18 +10,22 @@ import styles from './style.module.less';
 
 const { Search } = Input;
 
-interface IProps {}
+interface IProps {
+  location: any;
+}
 interface IState {
   running: boolean;
   scrollUpdate: boolean;
   packetDetailPanelVisible: boolean;
-  packets: object[];
+  packets: any[];
   expandedPacketIndex: number;
+  messageMutex: boolean;
 }
 
-export default class MainPage extends React.Component<IProps, IState> {
+class MainPage extends React.Component<IProps, IState> {
   rawPackets: any[] = [];
   handlePacketThrottled: Function;
+  devName: string | null;
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -28,10 +33,18 @@ export default class MainPage extends React.Component<IProps, IState> {
       scrollUpdate: true,
       packetDetailPanelVisible: false,
       packets: [],
-      expandedPacketIndex: -1
+      expandedPacketIndex: -1,
+      messageMutex: false
     };
     this.handlePacketThrottled = throttle(this.handlePacket, 100);
-    ipcRenderer.send('openDevice', 'en1');
+    this.devName = new URLSearchParams(props.location.search).get('dev');
+  }
+
+  componentDidMount() {
+    if (this.devName) {
+      ipcRenderer.send('openDevice', this.devName);
+      this.start();
+    }
   }
 
   start = () => {
@@ -61,6 +74,7 @@ export default class MainPage extends React.Component<IProps, IState> {
         this.setState({
           packets: []
         });
+        this.rawPackets = [];
       }
     });
   };
@@ -89,7 +103,9 @@ export default class MainPage extends React.Component<IProps, IState> {
         if (tcpPayload?.finFlg) {
           flagsArr.push('FIN');
         }
-        text += ` [${flagsArr.join(',')}]&emsp;Ack = ${tcpPayload?.ack}&emsp;Seq = ${tcpPayload?.seq}&emsp;Win = ${tcpPayload?.windowSize}`;
+        text += `&emsp;[${flagsArr.join(',')}]&emsp;Ack = ${
+          tcpPayload?.ack
+        }&emsp;Seq = ${tcpPayload?.seq}&emsp;Win = ${tcpPayload?.windowSize}`;
       }
       nextRowPacket.info = text;
     }
@@ -105,6 +121,23 @@ export default class MainPage extends React.Component<IProps, IState> {
   };
 
   handleViewPacketDetail = (rowIndex: number) => {
+    if (this.state.packets[rowIndex].protocol.startsWith('[')) {
+      if (!this.state.messageMutex) {
+        this.setState({
+          messageMutex: true
+        });
+        message.warning({
+          content: '不支持解析该协议',
+          duration: 1.5,
+          onClose: () => {
+            this.setState({
+              messageMutex: false
+            });
+          }
+        });
+      }
+      return;
+    }
     this.setState({
       packetDetailPanelVisible: true,
       expandedPacketIndex: rowIndex
@@ -182,3 +215,5 @@ export default class MainPage extends React.Component<IProps, IState> {
     );
   }
 }
+
+export default withRouter(MainPage as any);

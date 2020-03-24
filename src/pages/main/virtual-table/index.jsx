@@ -15,13 +15,11 @@ function VirtualTable(props) {
     if (scrollUpdate && !listRef.current.state.isScrolling) {
       listRef.current.scrollToItem(listRef.current.props.itemCount);
     }
-  }, [scrollUpdate, dataSource]);
-
-  useEffect(() => {
     if (!showScrollbar && listRef.current.props.itemCount > height / 28) {
       setShowScrollbar(true);
     }
-  }, [height, showScrollbar]);
+  }, [scrollUpdate, dataSource, showScrollbar, height]);
+
 
   return (
     <div className="virtual-table">

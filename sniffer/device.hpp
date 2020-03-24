@@ -59,16 +59,16 @@ struct SnifferDevice final {
         devObj["wireless"] = this->wirelessFlag;
         switch (this->connStatus) {
         case SnifferDevice::status::UNKNOWN:
-            devObj["connStatus"] = "unknown";
+            devObj["connStatus"] = "未知";
             break;
         case SnifferDevice::status::CONNECTED:
-            devObj["connStatus"] = "connected";
+            devObj["connStatus"] = "已连接";
             break;
         case SnifferDevice::status::DISCONNECTED:
-            devObj["connStatus"] = "disconnected";
+            devObj["connStatus"] = "未连接";
             break;
         case SnifferDevice::status::NOT_APPLICABLE:
-            devObj["connStatus"] = "notApplicable";
+            devObj["connStatus"] = "无";
             break;
         default:
             break;

@@ -78,7 +78,7 @@ app.on('activate', function() {
 
 ipcMain.on('getAllDevices', event => {
   const devs = sniffer.getDevs();
-  event.returnValue = devs.map(item => item.name);
+  event.returnValue = devs;
 });
 
 let snifferInstance: ISnifferInstance;
