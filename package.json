@@ -85,7 +85,7 @@
     },
     "mac": {
       "target": [
-        "dir"
+        "zip"
       ],
       "icon": "build/electron/assets/logo.png"
     }

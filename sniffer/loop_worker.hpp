@@ -51,7 +51,8 @@ public:
     void Cancel() {
         this->loopFlag = false;
         pcap_breakloop(this->pcapHandle);
-        consumer.notify_all();
+        // TODO: dead lock
+        pcapMux.unlock();
     }
 
     static void handlePacket(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) noexcept(false) {

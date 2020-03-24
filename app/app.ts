@@ -64,10 +64,15 @@ app.on('ready', function() {
 });
 
 // 当全部窗口关闭时退出。
-app.on('window-all-closed', function() {
+app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+  snifferInstance?.closeDev();
+});
+
+app.on('will-quit', () => {
+  snifferInstance?.closeDev();
 });
 
 app.on('activate', function() {
@@ -84,14 +89,14 @@ ipcMain.on('getAllDevices', event => {
 let snifferInstance: ISnifferInstance;
 let isRunning = false;
 
-ipcMain.on('openDevice', (event, arg) => {
+ipcMain.on('openDevice', (_, arg) => {
   const devName: string = arg;
   if (!snifferInstance) {
     snifferInstance = sniffer.openDev(devName);
   }
 });
 
-ipcMain.on('startCapture', event => {
+ipcMain.on('startCapture', () => {
   if (snifferInstance && !isRunning) {
     snifferInstance.onProgress(onProgress);
     snifferInstance.start();
@@ -102,9 +107,12 @@ ipcMain.on('startCapture', event => {
   }
 });
 
+ipcMain.on('filter-request', (event, value) => {
+  const success = snifferInstance.setFilter(value);
+  win?.webContents.send('filter-response', success);
+});
+
 function onProgress(packet: any) {
-  if (win) {
-    snifferInstance?.keepAlive();
-    win.webContents.send('progress', packet);
-  }
+  snifferInstance?.keepAlive();
+  win?.webContents.send('progress', packet);
 }

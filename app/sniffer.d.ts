@@ -11,7 +11,7 @@ export interface ISniffer {
   ): ISnifferInstance;
 }
 export interface ISnifferInstance {
-  setFilter(filter: string): void;
+  setFilter(filter: string): boolean;
   start(): void;
   onProgress(cb: Function): void;
   keepAlive(): void;

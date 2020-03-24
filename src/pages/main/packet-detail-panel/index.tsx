@@ -63,7 +63,7 @@ export default class PacketDetailPanel extends React.Component<IProps, IState> {
           onSelect={this.handleExpandedKeysUpdate}
           onExpand={this.handleExpandedKeysUpdate}
           treeData={treeData}
-          style={{ userSelect: 'none', fontWeight: 500 }}
+          style={{ fontWeight: 500 }}
         />
         {
           <pre

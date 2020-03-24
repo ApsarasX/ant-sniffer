@@ -1,6 +1,8 @@
 {
   "files.associations": {
     "*.gyp": "json",
-    "iosfwd": "cpp"
+    "iosfwd": "cpp",
+    "__mutex_base": "cpp",
+    "__config": "cpp"
   }
 }

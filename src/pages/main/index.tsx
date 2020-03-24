@@ -20,6 +20,8 @@ interface IState {
   packets: any[];
   expandedPacketIndex: number;
   messageMutex: boolean;
+  filterExpr: string;
+  lastFilterExpr: string;
 }
 
 class MainPage extends React.Component<IProps, IState> {
@@ -34,7 +36,9 @@ class MainPage extends React.Component<IProps, IState> {
       packetDetailPanelVisible: false,
       packets: [],
       expandedPacketIndex: -1,
-      messageMutex: false
+      messageMutex: false,
+      filterExpr: '',
+      lastFilterExpr: ''
     };
     this.handlePacketThrottled = throttle(this.handlePacket, 100);
     this.devName = new URLSearchParams(props.location.search).get('dev');
@@ -103,6 +107,9 @@ class MainPage extends React.Component<IProps, IState> {
         if (tcpPayload?.finFlg) {
           flagsArr.push('FIN');
         }
+        if (tcpPayload?.rstFlg) {
+          flagsArr.push('RST');
+        }
         text += `&emsp;[${flagsArr.join(',')}]&emsp;Ack = ${
           tcpPayload?.ack
         }&emsp;Seq = ${tcpPayload?.seq}&emsp;Win = ${tcpPayload?.windowSize}`;
@@ -112,6 +119,41 @@ class MainPage extends React.Component<IProps, IState> {
     this.setState(state => ({
       packets: state.packets.concat([nextRowPacket])
     }));
+  };
+
+  handleFilter = (value: string) => {
+    ipcRenderer.send('filter-request', value);
+    ipcRenderer.once('filter-response', (event, success) => {
+      if (!this.state.messageMutex) {
+        this.setState({
+          messageMutex: true
+        });
+        const onClose = () => {
+          this.setState({
+            messageMutex: false
+          });
+        };
+        if (success) {
+          message.success({
+            content: `${value ? '设置' : '清除'}设置过滤条件成功`,
+            duration: 2,
+            onClose: onClose
+          });
+          this.setState({
+            lastFilterExpr: value
+          });
+        } else {
+          message.error({
+            content: `${value ? '设置' : '清除'}过滤条件失败`,
+            duration: 2,
+            onClose: onClose
+          });
+        }
+        this.setState({
+          filterExpr: ''
+        });
+      }
+    });
   };
 
   handleScrollUpdateSwitch = (checked: boolean) => {
@@ -128,7 +170,7 @@ class MainPage extends React.Component<IProps, IState> {
         });
         message.warning({
           content: '不支持解析该协议',
-          duration: 1.5,
+          duration: 2,
           onClose: () => {
             this.setState({
               messageMutex: false
@@ -156,7 +198,9 @@ class MainPage extends React.Component<IProps, IState> {
       packets,
       scrollUpdate,
       packetDetailPanelVisible,
-      expandedPacketIndex
+      expandedPacketIndex,
+      filterExpr,
+      lastFilterExpr
     } = this.state;
     return (
       <div>
@@ -187,9 +231,20 @@ class MainPage extends React.Component<IProps, IState> {
               清空
             </Button>
             <Search
+              value={filterExpr}
               className={styles.filterSearch}
-              placeholder="过滤表达式"
+              placeholder={
+                lastFilterExpr
+                  ? `当前过滤条件: ${lastFilterExpr}`
+                  : '输入过滤表达式'
+              }
               enterButton="过滤"
+              onChange={e => {
+                this.setState({
+                  filterExpr: e.target.value
+                });
+              }}
+              onSearch={this.handleFilter}
             />
           </div>
           <div>
