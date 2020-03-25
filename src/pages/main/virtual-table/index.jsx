@@ -46,7 +46,7 @@ function VirtualTable(props) {
         height={height}
         itemCount={dataSource.length}
         itemSize={() => 28}
-        overscanCount={50}
+        overscanCount={80}
       >
         {({ index: rowIndex, style }) => (
           <div

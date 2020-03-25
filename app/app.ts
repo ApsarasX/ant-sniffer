@@ -89,8 +89,7 @@ ipcMain.on('getAllDevices', event => {
 let snifferInstance: ISnifferInstance;
 let isRunning = false;
 
-ipcMain.on('openDevice', (_, arg) => {
-  const devName: string = arg;
+ipcMain.on('openDevice', (_, devName) => {
   if (!snifferInstance) {
     snifferInstance = sniffer.openDev(devName);
   }

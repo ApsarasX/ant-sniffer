@@ -13,7 +13,6 @@
 #include <net/if_dl.h>
 #include <arpa/inet.h>
 #include "device.hpp"
-//#include "errors.hpp"
 
 using namespace std;
 
@@ -74,7 +73,6 @@ public:
         pcap_if_t *pcapDevices;
         char errBuf[PCAP_ERRBUF_SIZE];
         if (pcap_findalldevs(&pcapDevices, errBuf) == PCAP_ERROR) {
-//            throw FindAllDevicesException("查找网卡失败");
             return devices;
         }
         for (pcap_if_t *devIt = pcapDevices; devIt; devIt = devIt->next) {

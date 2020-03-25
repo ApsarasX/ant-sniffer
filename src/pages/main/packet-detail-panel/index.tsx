@@ -3,6 +3,7 @@ import { Drawer, Tree } from 'antd';
 import genTreedata from './gen-treedata';
 
 interface IProps {
+  height: number;
   visible: boolean;
   data: any;
   onClose: () => void;
@@ -43,14 +44,14 @@ export default class PacketDetailPanel extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { visible } = this.props;
+    const { visible, height } = this.props;
     const { expandedKeys, treeData } = this.state;
     return (
       <Drawer
         visible={visible}
         placement="bottom"
         closable={false}
-        height={window.innerHeight / 2}
+        height={height}
         onClose={this.handleDrawerClose}
       >
         <Tree

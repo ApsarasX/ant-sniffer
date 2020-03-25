@@ -12,10 +12,6 @@ module.exports = override(
     libraryDirectory: 'es',
     style: true
   }),
-  fixBabelImports('lodash', {
-    libraryDirectory: '',
-    camel2DashComponentName: false
-  }),
   addLessLoader({
     javascriptEnabled: true
   }),
